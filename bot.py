@@ -1,36 +1,9 @@
 from selenium import webdriver
 from secrets import store
+from utils import *
 import time
 
-
-def parse_time(time_str):
-  #call time and end it at the end of the function
-  seconds = 0
-  i = 0
-  length = len(time_str)
-  num = ''
-  while i < length:
-    char = time_str[i]
-    if str.isdigit(char):
-      num += char
-    elif char == 'd':
-      intNum = int(num)
-      seconds += intNum * 86400
-      num = ''
-    elif char == 'h':
-      intNum = int(num)
-      seconds += intNum * 3600
-      num = ''
-    elif char == 'm':
-      intNum = int(num)
-      seconds += intNum * 60
-      num = ''
-    elif char == 's':
-      intNum = int(num)
-      seconds += intNum
-      num = ''
-    i+=1
-  return seconds
+#rewrite parse_time using datetime
 
 
 
@@ -48,13 +21,30 @@ if __name__ == '__main__':
   driver.find_element_by_xpath('//*[@id="tbxPassword"]').send_keys(store['pw'])
   driver.find_element_by_xpath('//*[@id="btnLogin"]').click()
   time.sleep(5)
+
+  # return if the highest bid is greater than max bid here
+  minimum_bid = driver.find_element_by_id('nextBid').text
+  print(yen_to_int(minimum_bid))
+  # value = Decimal(sub(r'[^\d.]', '', highest_bid.get_attribute('data-usd')))
+
+  if yen_to_int(minimum_bid) > store['maxbid']:
+    print('Your max bid is lower than the minimum bid. Cannot Bid.')
+
+
+
   #find remaining time and evaluate it
   time_left = driver.find_element_by_xpath('//*[@id="lblTimeLeft"]')
   print(parse_time(time_left.text))
+  time.sleep(parse_time(time_left.text) - 200)
+  driver.refresh()
+
+  while minimum_bid < store['maxbid']:
+    driver.find_element_by_xpath('//*[@id="make_bid_logged"]').click()
+
   """
-  while True:
-    if the price is greater than the maxbid break
-    if its greater than an hour sleep for the amount of time
+  if its greater than an hour sleep until the auction is 5 mins away
+  while the price is less than the maxbid :
+
     time.sleep(240)
     driver.refresh()
   """
