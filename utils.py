@@ -12,6 +12,7 @@ def parse_time(time_str):
     elif char == 'd':
       intNum = int(num)
       seconds += intNum * 86400
+      return seconds
       num = ''
     elif char == 'h':
       intNum = int(num)
@@ -37,3 +38,4 @@ def yen_to_int(yen_string):
       yen_stripped += yen_string[i]
     i+=1
   return int(yen_stripped)
+
